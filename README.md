@@ -16,7 +16,7 @@ A modern, secure web-based port scanning tool built with Flask and Docker. Featu
 
 </div>
 
-## ✨ Features
+## Features
 
 - 🌐 **Web Interface**: Clean, modern UI with dark mode support
 - 🎯 **Flexible Targeting**:
@@ -37,7 +37,7 @@ A modern, secure web-based port scanning tool built with Flask and Docker. Featu
   - Docker Compose configuration
   - Health checks included
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Using Docker (Recommended)
 ```bash
@@ -74,7 +74,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-## 🔒 Security
+## Security
 
 ### OWASP TOP 10 Security Enhancements
 | **Type**               | **Enhancement**                     | **Details**                                                                                                                                       |
@@ -88,7 +88,7 @@ python app.py
 | Logging 📜| Enhanced Error Handling          | Comprehensive logging with rotation and unique error IDs            |
 | Web Security 🔐| Security Headers           | Implements all recommended security headers |
 
-## 📖 Documentation
+## Documentation
 
 ### Scanning Options
 - **Single Host**: `example.com` or `192.168.1.1`
