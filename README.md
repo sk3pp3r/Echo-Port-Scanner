@@ -10,7 +10,7 @@
 
 A modern, secure web-based port scanning tool built with Flask and Docker. Featuring an intuitive interface, multiple output formats, and dark mode support.
 
-[Features](#features) • [Quick Start](#quick-start) • [Security](#security) • [Documentation](#documentation)
+[Features](#features) • [Quick Start](#quick-start) • [Security](#security) • [Documentation](#documentation) • [Screenshots](screenshots.md)
 
 ![Echo-Port Scanner Screenshot](screenshots/main.jpg)
 
