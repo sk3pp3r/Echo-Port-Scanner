@@ -1,3 +1,8 @@
+# Echo-Port Scanner
+# Author: Haim Cohen
+# LinkedIn: https://www.linkedin.com/in/haimc/
+# GitHub: https://github.com/sk3pp3r/echo-port-scanner/
+
 name: Docker Build
 
 on:

@@ -63,7 +63,9 @@ chmod +x deploy.sh
 ```
 
 ### Or manually
-`docker-compose up -d`
+```bash
+docker-compose up -d
+```
 
 The application will be available at `http://localhost:8085`
 
