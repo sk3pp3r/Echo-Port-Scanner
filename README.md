@@ -1,126 +1,150 @@
-# Echo-Port Scanner
+<div align="center">
+
+# 🔍 Echo-Port Scanner
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Docker](https://img.shields.io/badge/docker-%230db7ed.svg?style=flat&logo=docker&logoColor=white)](https://www.docker.com/)
 [![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
-[![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=flat&logo=kubernetes&logoColor=white)](https://kubernetes.io/)
+[![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
+[![Security: OWASP](https://img.shields.io/badge/security-OWASP-green.svg)](https://owasp.org/www-project-top-ten/)
 
-A modern web-based port scanning tool built with Flask and Docker. Echo-Port Scanner provides an intuitive interface for network port scanning with support for multiple output formats and dark mode.
+A modern, secure web-based port scanning tool built with Flask and Docker. Featuring an intuitive interface, multiple output formats, and dark mode support.
+
+[Features](#features) • [Quick Start](#quick-start) • [Security](#security) • [Documentation](#documentation)
 
 ![Echo-Port Scanner Screenshot](screenshots/main.jpg)
-![Echo-Port Scanner Screenshot](screenshots/results.png)
 
-## Project Structure
-```
-echo-port-scanner/
-├── .github/
-│   └── workflows/
-│       └── docker-build.yml      # GitHub Actions workflow
-├── static/
-│   ├── favicon.svg              # Application favicon
-│   ├── theme-dark.svg          # Dark theme icon
-│   └── theme-light.svg         # Light theme icon
-├── templates/
-│   ├── index.html              # Main scanning page
-│   └── result.html             # Scan results page
-├── .gitignore                  # Git ignore rules
-├── app.py                      # Main Flask application
-├── deploy.sh                   # Deployment script
-├── docker-compose.yml          # Docker Compose configuration
-├── Dockerfile                  # Docker build instructions
-├── LICENSE                     # MIT License
-├── README.md                   # This file
-└── requirements.txt            # Python dependencies
-```
+</div>
 
-## Features
+## ✨ Features
 
-- 🌐 Web-based interface for Nmap scanning
-- 🎯 Support for multiple target formats:
-  - Single IP/hostname
-  - IP ranges (192.168.1.1-254)
-  - Multiple targets (comma-separated)
-- 📊 Multiple export formats:
-  - LOG (default)
-  - JSON
-  - CSV
-- 🌙 Dark/Light mode support
-- 📱 Responsive design
-- 🔒 Input validation and sanitization
-- 🐳 Docker support
-- ⚡ Real-time scan results
-- 📈 Scan statistics and metrics
+- 🌐 **Web Interface**: Clean, modern UI with dark mode support
+- 🎯 **Flexible Targeting**:
+  - Single IP/hostname scanning
+  - IP range support (e.g., 192.168.1.1-254)
+  - Multiple target scanning
+- 📊 **Multiple Export Formats**:
+  - LOG (detailed scan output)
+  - JSON (structured data)
+  - CSV (spreadsheet-friendly)
+- 🛡️ **Enterprise-Grade Security**:
+  - OWASP Top 10 compliant
+  - Rate limiting protection
+  - Input sanitization
+  - Security headers
+- 🐳 **Container Ready**:
+  - Docker support
+  - Docker Compose configuration
+  - Health checks included
 
-## Quick Start
+## 🚀 Quick Start
 
-### Using Docker Compose (Recommended)
+### Using Docker (Recommended)
 ```bash
+# Clone the repository
 git clone https://github.com/sk3pp3r/echo-port-scanner.git
 cd echo-port-scanner
-# Deploy using the script
+
+# Deploy using script
 chmod +x deploy.sh
 ./deploy.sh
-```
 
-### Or manually
-```bash
+# Or manually with Docker Compose
 docker-compose up -d
 ```
 
-The application will be available at `http://localhost:8085`
+Access the application at `http://localhost:8085`
 
 ### Manual Installation
+```bash
+# Clone and setup
+git clone https://github.com/sk3pp3r/echo-port-scanner.git
+cd echo-port-scanner
 
-## Security Considerations
+# Create virtual environment
+python -m venv venv
+source venv/bin/activate  # Linux/Mac
+# or
+.\venv\Scripts\activate  # Windows
 
-- The application runs with minimal container privileges
-- Input validation for all user inputs
-- No root access in container
-- Network access limited to scanning capabilities
+# Install dependencies
+pip install -r requirements.txt
 
-## Contributing
+# Run the application
+python app.py
+```
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+## 🔒 Security
 
+### OWASP TOP 10 Security Enhancements
+| **Type**               | **Enhancement**                     | **Details**                                                                                                                                       |
+|--------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| Environment Configuration 🔑   | Secret Key Management               | Uses environment variables for secrets, reducing hard-coded values           |
+| Input Validation 🛡️| Target Validation                    | Robust hostname/IP validation blocking malicious inputs    |
+| Command Security 🔐| Nmap Command Sanitization           | Whitelist approach for parameters, blocking command injection         |
+| Rate Limiting ⏱️| Request Throttling                  | Prevents abuse with configurable request limits |
+| Session Security 🍪| Secure Session Cookies              | Implements secure cookie configuration and lifetime limits |
+| Data Protection 🔇| Output Sanitization               | Redacts sensitive information from scan results |
+| Logging 📜| Enhanced Error Handling          | Comprehensive logging with rotation and unique error IDs            |
+| Web Security 🔐| Security Headers           | Implements all recommended security headers |
+
+## 📖 Documentation
+
+### Scanning Options
+- **Single Host**: `example.com` or `192.168.1.1`
+- **IP Range**: `192.168.1.1-254`
+- **Multiple Targets**: `192.168.1.10,10.0.0.138`
+- **Port Formats**:
+  - Single: `80`
+  - Multiple: `80,443,8080`
+  - Range: `1-1000`
+
+### Export Formats
+- **LOG**: Raw scan output with metadata
+- **JSON**: Structured data format
+- **CSV**: Spreadsheet-compatible format
+
+## 🛠️ Development
+
+### Project Structure
+```
+echo-port-scanner/
+├── app.py                      # Main application
+├── templates/                  # HTML templates
+├── static/                    # Static assets
+├── Dockerfile                 # Container definition
+├── docker-compose.yml         # Container orchestration
+└── requirements.txt           # Python dependencies
+```
+
+### Contributing
 1. Fork the repository
 2. Create your feature branch (`git checkout -b feature/AmazingFeature`)
-3. Commit your changes (`git commit -m 'Add some AmazingFeature'`)
+3. Commit your changes (`git commit -m 'Add AmazingFeature'`)
 4. Push to the branch (`git push origin feature/AmazingFeature`)
 5. Open a Pull Request
 
-## License
+## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Author
+## 👥 Author
 
 **Haim Cohen**
 - LinkedIn: [@haimc](https://www.linkedin.com/in/haimc/)
 - GitHub: [@sk3pp3r](https://github.com/sk3pp3r)
 
-## Acknowledgments
+## 🙏 Acknowledgments
 
-- [Nmap](https://nmap.org/) for the powerful network scanning capabilities
-- [Flask](https://flask.palletsprojects.com/) for the web framework
-- [Bootstrap](https://getbootstrap.com/) for the UI components
+- [Nmap](https://nmap.org/) - Network scanning capabilities
+- [Flask](https://flask.palletsprojects.com/) - Web framework
+- [Bootstrap](https://getbootstrap.com/) - UI components
 
-## Disclaimer
+## ⚠️ Disclaimer
 
 This tool is for educational and authorized testing purposes only. Unauthorized scanning may be illegal. Use responsibly and only on networks you own or have permission to test.
 
-##  Changelog
-
-### OWASP TOP 10 Security Enhancements (2024-02-13)
-| **Type**               | **Enhancement**                     | **Details**                                                                                                                                       |
-|--------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
-| Environment Configuration 🔑   | Secret Key Management               | Uses an environment variable (`FLASK_SECRET_KEY`) for the secret key with a fallback value, reducing hard-coded secrets in source code.           |
-| Input Validation & Sanitization 🛡️| Target Validation                    | Implements robust hostname/IP and character validation (using regex and Python’s `ipaddress` module) to block malicious inputs and injection.    |
-| Input Validation & Sanitization 🛡️| Port Validation                     | Validates port inputs (including ranges and comma-separated values) ensuring only valid port numbers (0-65535) are processed.                         |
-| Input Validation & Sanitization 🛡️| Nmap Command Sanitization           | Checks the target for dangerous characters (like `;\|&` etc.) to avoid command injection and uses a whitelist approach for nmap parameters.         |
-| Rate Limiting ⏱️               | Request Throttling                  | Integrates Flask-Limiter to restrict excessive requests (e.g., 50/hour, 1/second globally and 5 scans per minute), mitigating brute-force attacks. |
-| Session Security 🍪🔒          | Secure Session Cookies              | Configures session cookies with `SESSION_COOKIE_SECURE`, `HTTPONLY`, and `SAMESITE='Strict'` plus a limited lifetime, enhancing session protection. |
-| Output Sanitization 🔇          | Scan Output Redaction               | Implements output sanitization to redact sensitive information (MAC addresses, OS details, service info) from the scan results before display/download. |
-| Logging & Error Handling 📜🚨    | Rotating File Handler & Logging     | Uses a RotatingFileHandler for logs, ensuring logs do not grow indefinitely and capturing detailed error logs including file location and unique IDs. |
-| Logging & Error Handling 📜🚨    | Centralized Error Handling          | Global error handler captures exceptions, logs them with a unique UUID (using Python’s `uuid`), and returns a user-friendly error page.            |
-| HTTP Security Headers 🔐        | Enhanced Response Headers           | Adds multiple security headers (e.g., `X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Content-Security-Policy`, `HSTS`) to protect against common web vulnerabilities. |
-| File Download Security 📂       | Safe File Downloads                 | Uses `send_file` with proper MIME types and encoding for different download formats (log, CSV, JSON) to ensure safe file transmission.             |
+---
+<div align="center">
+Made with ❤️ by Haim Cohen
+</div>
