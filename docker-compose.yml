@@ -1,0 +1,27 @@
+version: '3.8'
+
+services:
+  echo-port-scanner:
+    build: .
+    container_name: echo-port-scanner
+    ports:
+      - "8085:8085"
+    environment:
+      - FLASK_SECRET_KEY=change_this_to_a_random_secret_in_production
+      # Add any other environment variables here
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
+    cap_add:
+      - NET_RAW
+      - NET_ADMIN
+    restart: unless-stopped
+    networks:
+      - scanner-net
+    volumes:
+      - /etc/localtime:/etc/localtime:ro  # Sync container time with host
+
+networks:
+  scanner-net:
+    driver: bridge 

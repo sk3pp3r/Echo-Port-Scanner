@@ -1,0 +1,395 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo-Port Scanner</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
+    <style>
+        body {
+            background-color: var(--bs-body-bg);
+            color: var(--bs-body-color);
+        }
+        .container {
+            max-width: 1200px;
+            margin-top: 50px;
+            padding-bottom: 100px; /* Make room for disclaimer */
+        }
+        .card {
+            border: none;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            height: auto;
+            min-height: 400px;
+        }
+        .card-header {
+            background-color: #343a40;
+            color: white;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .app-icon {
+            width: 32px;
+            height: 32px;
+        }
+        .btn-primary {
+            background-color: #343a40;
+            border-color: #343a40;
+        }
+        .btn-primary:hover {
+            background-color: #23272b;
+            border-color: #23272b;
+        }
+        .alert {
+            margin-top: 20px;
+        }
+        .theme-icon {
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+        }
+        .quick-guide {
+            font-size: 0.95rem;
+        }
+        .quick-guide h5 {
+            color: var(--bs-primary);
+            margin-top: 1rem;
+        }
+        .quick-guide ul {
+            padding-left: 1.2rem;
+        }
+        [data-bs-theme="dark"] .card {
+            background-color: #2b2b2b;
+        }
+        .theme-toggle {
+            position: fixed;
+            bottom: 80px;  /* Moved up to make room for disclaimer */
+            right: 20px;
+            background: var(--bs-dark);
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        
+        .disclaimer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: var(--bs-dark);
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 0.9rem;
+            z-index: 999;
+        }
+        
+        .disclaimer a {
+            color: #28a745;
+            text-decoration: none;
+        }
+        
+        .disclaimer a:hover {
+            text-decoration: underline;
+        }
+        
+        .card-toggle {
+            cursor: pointer;
+            transition: transform 0.3s;
+        }
+        
+        .card-toggle.collapsed {
+            transform: rotate(-90deg);
+        }
+        
+        .guide-toggle {
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+            margin-left: auto;
+            margin-right: 10px;
+        }
+        
+        .guide-toggle:hover {
+            opacity: 0.8;
+        }
+        
+        .quick-guide.collapsed {
+            display: none;
+        }
+        
+        @media (max-width: 768px) {
+            .quick-guide.collapsed + .col-md-8 {
+                width: 100%;
+            }
+        }
+        
+        .minimize-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        .guide-column {
+            transition: all 0.3s ease;
+            position: relative;
+            height: fit-content;  /* Changed from min-height: 100vh */
+        }
+
+        .guide-column.collapsed {
+            max-width: 40px;
+            min-width: 40px;
+            padding: 0;
+            flex: 0 0 40px;
+            height: auto;
+        }
+
+        .main-column {
+            transition: all 0.3s ease;
+            flex: 1;
+            margin-left: 15px;
+        }
+
+        .quick-guide {
+            transition: all 0.3s ease;
+            opacity: 1;
+            width: 100%;
+        }
+
+        .quick-guide.collapsed {
+            opacity: 0;
+            width: 0;
+            display: none;
+        }
+
+        .card-header.collapsed {
+            padding: 10px 0;  /* Adjusted padding */
+            writing-mode: vertical-rl;
+            text-orientation: mixed;
+            height: auto;     /* Changed from 100% */
+            min-height: 150px; /* Minimum height for collapsed state */
+            transform: rotate(180deg);
+            justify-content: center;
+            cursor: pointer;
+            background-color: #343a40;
+        }
+
+        .card-header.collapsed h5 {
+            font-size: 14px;
+            white-space: nowrap;
+            margin: 10px 0;
+        }
+
+        .card.collapsed {
+            border-radius: 0;
+        }
+
+        .guide-controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .guide-toggle {
+            background: none;
+            border: none;
+            color: white;
+            padding: 0;
+            display: flex;
+            align-items: center;
+        }
+
+        .guide-toggle:hover {
+            opacity: 0.8;
+        }
+
+        .card-header.collapsed .guide-controls {
+            display: none;
+        }
+
+        .row {
+            align-items: flex-start;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <!-- Left Column: Quick Guide -->
+            <div class="guide-column col-md-4" id="guideColumn">
+                <div class="card h-100" id="guideCard">
+                    <div class="card-header d-flex align-items-center" id="guideHeader" onclick="toggleGuide()">
+                        <h5 class="mb-0">Quick Guide</h5>
+                        <div class="guide-controls ms-auto">
+                            <img src="{{ url_for('static', filename='theme-light.svg') }}" 
+                                 alt="Toggle theme" 
+                                 class="theme-icon" 
+                                 id="themeToggle"
+                                 onclick="toggleTheme(event)">
+                            <button class="guide-toggle" onclick="toggleGuide(event)" title="Minimize guide">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="minimize-icon" id="guideToggleIcon" viewBox="0 0 16 16">
+                                    <path fill-rule="evenodd" d="M11.354 1.646a.5.5 0 0 1 0 .708L5.707 8l5.647 5.646a.5.5 0 0 1-.708.708l-6-6a.5.5 0 0 1 0-.708l6-6a.5.5 0 0 1 .708 0z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body quick-guide" id="quickGuide">
+                        <h5>What is Echo-Port Scanner?</h5>
+                        <p>Echo-Port Scanner is a web-based port scanning tool that helps you identify open ports and services running on network hosts.</p>
+
+                        <h5>Scanning Options:</h5>
+                        <ul>
+                            <li><strong>Single Host:</strong> Scan one IP or hostname</li>
+                            <li><strong>IP Range:</strong> Scan a range of IP addresses</li>
+                            <li><strong>Multiple Targets:</strong> Scan several specific IPs</li>
+                        </ul>
+
+                        <h5>Target Format Examples:</h5>
+                        <ul>
+                            <li>Single IP: <code>192.168.1.1</code></li>
+                            <li>Hostname: <code>example.com</code></li>
+                            <li>IP Range: <code>192.168.1.1-254</code></li>
+                            <li>Full Range: <code>192.168.1.1-192.168.1.254</code></li>
+                            <li>Multiple: <code>192.168.1.10,10.0.0.138</code></li>
+                        </ul>
+
+                        <h5>Features:</h5>
+                        <ul>
+                            <li>Fast and efficient scanning</li>
+                            <li>Download scan results</li>
+                            <li>Secure input validation</li>
+                            <li>Timeout protection</li>
+                        </ul>
+
+                        <div class="alert alert-warning mt-3" role="alert">
+                            <small>⚠️ Only scan networks you have permission to test.</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column: Scan Form -->
+            <div class="main-column col-md-8" id="mainColumn">
+                <div class="card">
+                    <div class="card-header">
+                        <img src="{{ url_for('static', filename='favicon.svg') }}" alt="Echo-Port Scanner" class="app-icon">
+                        <h3 class="mb-0">Echo-Port Scanner</h3>
+                    </div>
+                    <div class="card-body">
+                        {% with messages = get_flashed_messages() %}
+                            {% if messages %}
+                                {% for message in messages %}
+                                    <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                    </div>
+                                {% endfor %}
+                            {% endif %}
+                        {% endwith %}
+
+                        <form method="POST" action="{{ url_for('scan') }}">
+                            <div class="mb-3">
+                                <label for="target" class="form-label">Target IP/Hostname:</label>
+                                <input type="text" class="form-control" id="target" name="target" 
+                                       placeholder="Enter IP, hostname, or IP range" required>
+                                <div class="form-text">
+                                    Examples:
+                                    <ul class="mb-0 mt-1">
+                                        <li>Single target: <code>192.168.1.1</code> or <code>example.com</code></li>
+                                        <li>IP range: <code>192.168.1.1-254</code> or <code>192.168.1.1-192.168.1.254</code></li>
+                                        <li>Multiple targets: <code>192.168.1.10,10.0.0.138</code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="ports" class="form-label">Ports:</label>
+                                <input type="text" class="form-control" id="ports" name="ports" 
+                                       placeholder="Enter ports (e.g., 80,443 or 1-1000)" required>
+                                <div class="form-text">
+                                    Examples: Single port (80), Multiple ports (80,443), Port range (1-1000)
+                                </div>
+                            </div>
+                            <button type="submit" class="btn btn-primary">Start Scan</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="disclaimer">
+        ⚠️ Disclaimer: This tool is for educational and authorized testing purposes only. Unauthorized scanning may be illegal. 
+        Use responsibly and only on networks you own or have permission to test.
+        <a href="https://nmap.org/book/legal-issues.html" target="_blank">Learn more</a>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function toggleTheme(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('themeToggle');
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-bs-theme', newTheme);
+            themeIcon.src = "{{ url_for('static', filename='theme-') }}" + newTheme + ".svg";
+            
+            localStorage.setItem('theme', newTheme);
+        }
+
+        // Set initial theme from localStorage
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        document.documentElement.setAttribute('data-bs-theme', savedTheme);
+        document.getElementById('themeToggle').src = "{{ url_for('static', filename='theme-') }}" + savedTheme + ".svg";
+
+        function toggleGuide(event) {
+            if (event) {
+                event.stopPropagation();
+            }
+            
+            const guideColumn = document.getElementById('guideColumn');
+            const guideCard = document.getElementById('guideCard');
+            const guide = document.getElementById('quickGuide');
+            const header = document.getElementById('guideHeader');
+            const mainColumn = document.getElementById('mainColumn');
+            
+            guideColumn.classList.toggle('collapsed');
+            guideCard.classList.toggle('collapsed');
+            guide.classList.toggle('collapsed');
+            header.classList.toggle('collapsed');
+            
+            if (guideColumn.classList.contains('collapsed')) {
+                mainColumn.style.marginLeft = '0';
+                localStorage.setItem('guideCollapsed', 'true');
+            } else {
+                mainColumn.style.marginLeft = '15px';
+                localStorage.setItem('guideCollapsed', 'false');
+            }
+        }
+
+        // Restore guide state from localStorage
+        const guideCollapsed = localStorage.getItem('guideCollapsed') === 'true';
+        if (guideCollapsed) {
+            toggleGuide();
+        }
+
+        // Stop theme toggle from triggering guide toggle
+        document.getElementById('themeToggle').addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    </script>
+</body>
+</html>
