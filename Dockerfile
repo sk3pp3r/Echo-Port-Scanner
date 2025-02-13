@@ -21,7 +21,9 @@ RUN apk add --no-cache \
     python3 \
     nmap \
     ca-certificates \
-    && adduser -D -H -h /app scanner
+    && adduser -D -H -h /app scanner \
+    && chown -R scanner:scanner /app \
+    && chmod -R 550 /app  # More restrictive permissions
 
 # Copy Python packages from builder
 COPY --from=builder /usr/lib/python3.11/site-packages/ /usr/lib/python3.11/site-packages/

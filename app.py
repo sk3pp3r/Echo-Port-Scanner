@@ -7,13 +7,35 @@ from datetime import datetime
 import ipaddress
 import json
 import csv
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
+import uuid
+import logging
+from logging.handlers import RotatingFileHandler
 
 app = Flask(__name__, static_url_path='/static')
 # Use environment variable for secret key
 app.secret_key = os.environ.get('FLASK_SECRET_KEY', 'dev_key')
 
+# Use a whitelist approach for nmap parameters
+ALLOWED_NMAP_PARAMS = ["-p", "-sT", "-Pn"]
+def sanitize_nmap_command(target, ports):
+    cmd = ["nmap", "--disable-arp-ping"]
+    if any(char in target for char in ";|&`$(){}[]"):
+        raise ValueError("Invalid target characters")
+    return cmd + ["-p", ports, target]
+
 def validate_target(target):
-    """Validate target IP address, hostname, or IP range"""
+    """Enhanced target validation"""
+    if len(target) > 255:  # Maximum DNS length
+        return False
+        
+    # Stricter hostname validation
+    hostname_pattern = r'^[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?(\.[a-zA-Z0-9]([a-zA-Z0-9\-]{0,61}[a-zA-Z0-9])?)*$'
+    
+    # Add more specific validation rules
+    if any(char in target for char in ";|&`$(){}[]"):
+        return False
     # Split multiple targets
     targets = target.split(',')
     
@@ -42,7 +64,7 @@ def validate_target(target):
                 ipaddress.ip_address(t)
             except ValueError:
                 # Try as hostname
-                if not re.match(r'^[a-zA-Z0-9][a-zA-Z0-9\.-]*[a-zA-Z0-9]$', t):
+                if not re.match(hostname_pattern, t):
                     return False
     return True
 
@@ -164,11 +186,46 @@ def parse_scan_stats(output):
     
     return stats
 
+def sanitize_scan_output(output):
+    # Remove sensitive information patterns
+    sensitive_patterns = [
+        r'MAC Address:.*',
+        r'OS details:.*',
+        r'Service Info:.*'
+    ]
+    for pattern in sensitive_patterns:
+        output = re.sub(pattern, '[REDACTED]', output)
+    return output
+
+limiter = Limiter(
+    app=app,
+    key_func=get_remote_address,
+    default_limits=["50 per hour", "1 per second"]
+)
+
+# Enhanced session security
+app.config.update(
+    SESSION_COOKIE_SECURE=True,
+    SESSION_COOKIE_HTTPONLY=True,
+    SESSION_COOKIE_SAMESITE='Strict',
+    PERMANENT_SESSION_LIFETIME=1800,  # 30 minutes
+    SESSION_COOKIE_NAME='__Secure-session'
+)
+
+def setup_logging():
+    handler = RotatingFileHandler('scanner.log', maxBytes=10000000, backupCount=5)
+    handler.setFormatter(logging.Formatter(
+        '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'
+    ))
+    app.logger.addHandler(handler)
+    app.logger.setLevel(logging.INFO)
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
 @app.route('/scan', methods=['POST'])
+@limiter.limit("5 per minute")
 def scan():
     target = request.form.get('target', '').strip()
     ports = request.form.get('ports', '').strip()
@@ -186,18 +243,7 @@ def scan():
         return redirect(url_for('index'))
     
     # Build the nmap command with validated input
-    cmd = ["nmap", "-p", ports]
-    
-    # Add target(s)
-    if ',' in target:
-        # Multiple targets
-        cmd.extend(target.split(','))
-    elif '-' in target:
-        # IP range
-        cmd.append(target)
-    else:
-        # Single target
-        cmd.append(target)
+    cmd = sanitize_nmap_command(target, ports)
     
     try:
         result = subprocess.check_output(
@@ -230,15 +276,7 @@ def download_result(format, target, ports):
         flash("Invalid parameters for download")
         return redirect(url_for('index'))
         
-    cmd = ["nmap", "-p", ports]
-    
-    # Add target(s)
-    if ',' in target:
-        cmd.extend(target.split(','))
-    elif '-' in target:
-        cmd.append(target)
-    else:
-        cmd.append(target)
+    cmd = sanitize_nmap_command(target, ports)
     
     try:
         result = subprocess.check_output(
@@ -305,6 +343,21 @@ Ports: {ports}
     except (subprocess.CalledProcessError, subprocess.TimeoutExpired) as e:
         flash("Error generating download file")
         return redirect(url_for('index'))
+
+@app.after_request
+def add_security_headers(response):
+    response.headers['X-Content-Type-Options'] = 'nosniff'
+    response.headers['X-Frame-Options'] = 'DENY'
+    response.headers['X-XSS-Protection'] = '1; mode=block'
+    response.headers['Content-Security-Policy'] = "default-src 'self'; script-src 'self' 'unsafe-inline' cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' cdn.jsdelivr.net;"
+    response.headers['Strict-Transport-Security'] = 'max-age=31536000; includeSubDomains'
+    return response
+
+@app.errorhandler(Exception)
+def handle_error(error):
+    error_id = uuid.uuid4()
+    app.logger.error(f'Error ID: {error_id}, Error: {str(error)}')
+    return render_template('error.html', error_id=error_id), 500
 
 if __name__ == '__main__':
     # Production configuration

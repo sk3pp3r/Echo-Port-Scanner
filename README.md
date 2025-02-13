@@ -107,3 +107,20 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ## Disclaimer
 
 This tool is for educational and authorized testing purposes only. Unauthorized scanning may be illegal. Use responsibly and only on networks you own or have permission to test.
+
+##  Changelog
+
+### OWASP TOP 10 Security Enhancements (2024-02-13)
+| **Type**               | **Enhancement**                     | **Details**                                                                                                                                       |
+|--------------------------------|-------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------|
+| Environment Configuration 🔑   | Secret Key Management               | Uses an environment variable (`FLASK_SECRET_KEY`) for the secret key with a fallback value, reducing hard-coded secrets in source code.           |
+| Input Validation & Sanitization 🛡️| Target Validation                    | Implements robust hostname/IP and character validation (using regex and Python’s `ipaddress` module) to block malicious inputs and injection.    |
+| Input Validation & Sanitization 🛡️| Port Validation                     | Validates port inputs (including ranges and comma-separated values) ensuring only valid port numbers (0-65535) are processed.                         |
+| Input Validation & Sanitization 🛡️| Nmap Command Sanitization           | Checks the target for dangerous characters (like `;|&` etc.) to avoid command injection and uses a whitelist approach for nmap parameters.         |
+| Rate Limiting ⏱️               | Request Throttling                  | Integrates Flask-Limiter to restrict excessive requests (e.g., 50/hour, 1/second globally and 5 scans per minute), mitigating brute-force attacks. |
+| Session Security 🍪🔒          | Secure Session Cookies              | Configures session cookies with `SESSION_COOKIE_SECURE`, `HTTPONLY`, and `SAMESITE='Strict'` plus a limited lifetime, enhancing session protection. |
+| Output Sanitization 🔇          | Scan Output Redaction               | Implements output sanitization to redact sensitive information (MAC addresses, OS details, service info) from the scan results before display/download. |
+| Logging & Error Handling 📜🚨    | Rotating File Handler & Logging     | Uses a RotatingFileHandler for logs, ensuring logs do not grow indefinitely and capturing detailed error logs including file location and unique IDs. |
+| Logging & Error Handling 📜🚨    | Centralized Error Handling          | Global error handler captures exceptions, logs them with a unique UUID (using Python’s `uuid`), and returns a user-friendly error page.            |
+| HTTP Security Headers 🔐        | Enhanced Response Headers           | Adds multiple security headers (e.g., `X-Content-Type-Options`, `X-Frame-Options`, `X-XSS-Protection`, `Content-Security-Policy`, `HSTS`) to protect against common web vulnerabilities. |
+| File Download Security 📂       | Safe File Downloads                 | Uses `send_file` with proper MIME types and encoding for different download formats (log, CSV, JSON) to ensure safe file transmission.             |
