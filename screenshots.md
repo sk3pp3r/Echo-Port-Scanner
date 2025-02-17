@@ -21,7 +21,8 @@
 *results - multiple hosts with port range*
 
 ## Target Information
-![image](https://github.com/user-attachments/assets/e2d255eb-040f-42ce-a2e7-5b2f47d2cf4a)
+![image](https://github.com/user-attachments/assets/97aefdcb-0298-4fb7-b3fc-37ce1242dd8b)
+
 *Target Information*
 
 ## Json log
@@ -31,6 +32,7 @@
 ## CSV log
 ![image](https://github.com/user-attachments/assets/c1d07aee-2e84-4001-bb6c-2d6025d165b9)
 *csv log output*
+
 
 ---
 Note: These screenshots are for demonstration purposes. Your actual interface may vary slightly depending on the version and configuration. 
