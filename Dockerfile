@@ -41,7 +41,7 @@ RUN chown -R scanner:scanner /app
 USER scanner
 
 # Expose port
-EXPOSE 8085
+EXPOSE 8080
 
 # Health check
 HEALTHCHECK --interval=30s --timeout=10s --start-period=5s --retries=3 \
