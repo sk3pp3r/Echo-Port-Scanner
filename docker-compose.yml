@@ -5,7 +5,7 @@ services:
     build: .
     container_name: echo-port-scanner
     ports:
-      - "8085:8085"
+      - "8080:8080"
     environment:
       - FLASK_SECRET_KEY=change_this_to_a_random_secret_in_production
       # Add any other environment variables here
