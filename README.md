@@ -42,8 +42,8 @@ A modern, secure web-based port scanning tool built with Flask and Docker. Featu
 ### Using Docker (Recommended)
 ```bash
 # Clone the repository
-git clone https://github.com/sk3pp3r/echo-port-scanner.git
-cd echo-port-scanner
+git clone https://github.com/sk3pp3r/echo.git
+cd echo
 
 # Deploy using script
 chmod +x deploy.sh
@@ -58,8 +58,8 @@ Access the application at `http://localhost:8085`
 ### Manual Installation
 ```bash
 # Clone and setup
-git clone https://github.com/sk3pp3r/echo-port-scanner.git
-cd echo-port-scanner
+git clone https://github.com/sk3pp3r/echo.git
+cd echo
 
 # Create virtual environment
 python -m venv venv
