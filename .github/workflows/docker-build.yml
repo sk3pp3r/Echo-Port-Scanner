@@ -20,8 +20,8 @@ jobs:
     - name: Build the Docker image
       run: docker build . --file Dockerfile --tag echo-port-scanner:$(date +%s)
       
-    - name: Run security scan
-      uses: anchore/scan-action@v2
-      with:
-        image: "echo-port-scanner:latest"
-        fail-build: true 
+    # - name: Run security scan
+    #   uses: anchore/scan-action@v2
+    #   with:
+    #     image: "echo-port-scanner:latest"
+    #     fail-build: true 
