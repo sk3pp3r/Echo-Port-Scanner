@@ -7,6 +7,7 @@
 [![Flask](https://img.shields.io/badge/flask-%23000.svg?style=flat&logo=flask&logoColor=white)](https://flask.palletsprojects.com/)
 [![Python](https://img.shields.io/badge/python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Security: OWASP](https://img.shields.io/badge/security-OWASP-green.svg)](https://owasp.org/www-project-top-ten/)
+[![Docker Build](https://github.com/sk3pp3r/echo/actions/workflows/docker-build.yml/badge.svg)](https://github.com/sk3pp3r/echo/actions/workflows/docker-build.yml)
 
 A modern, secure web-based port scanning tool built with Flask and Docker. Featuring an intuitive interface, multiple output formats, and dark mode support.
 
