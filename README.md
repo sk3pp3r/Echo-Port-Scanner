@@ -147,5 +147,5 @@ This tool is for educational and authorized testing purposes only. Unauthorized 
 
 ---
 <div align="center">
-Made with ❤️ by Haim Cohen
+Made by Haim Cohen 2025
 </div>
